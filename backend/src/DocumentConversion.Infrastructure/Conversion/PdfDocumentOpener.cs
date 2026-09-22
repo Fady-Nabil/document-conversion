@@ -14,6 +14,10 @@ internal static class PdfDocumentOpener
 
             using var buffer = new MemoryStream();
             pdfStream.CopyTo(buffer);
+
+            if (pdfStream.CanSeek)
+                pdfStream.Position = 0;
+
             return PdfDocument.Open(buffer.ToArray());
         }
         catch (DomainException)

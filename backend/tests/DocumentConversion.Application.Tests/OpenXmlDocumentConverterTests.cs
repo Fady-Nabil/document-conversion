@@ -20,19 +20,36 @@ public class OpenXmlDocumentConverterTests
     }
 
     [Fact]
-    public async Task AnalyzeThenConvert_OnSameMemoryStream_Succeeds()
+    public async Task AnalyzeThenConvert_OnSamePdfBytes_Succeeds()
     {
         var pdfBytes = MinimalPdfWithText("Assessment sample text");
-        using var stream = new MemoryStream(pdfBytes);
         var analyzer = new PdfPigAnalyzer();
         var converter = new OpenXmlDocumentConverter();
 
-        var analysis = await analyzer.AnalyzeAsync(stream);
-        stream.Position = 0;
-        var model = await converter.ConvertPdfToDocumentModelAsync(stream);
+        var analysis = await analyzer.AnalyzeAsync(new MemoryStream(pdfBytes), CancellationToken.None);
+        var model = await converter.ConvertPdfToDocumentModelAsync(new MemoryStream(pdfBytes), CancellationToken.None);
 
         analysis.TotalExtractableCharacters.Should().BeGreaterThan(0);
         model.TotalExtractableCharacters.Should().BeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task Analyze_SampleLargeMultiPagePdf_Succeeds()
+    {
+        var samplePath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory,
+            "..", "..", "..", "..", "..", "..",
+            "samples",
+            "large-multi-page.pdf"));
+        File.Exists(samplePath).Should().BeTrue("regenerate samples with SamplePdfGenerator if missing");
+
+        var pdfBytes = await File.ReadAllBytesAsync(samplePath);
+        var analyzer = new PdfPigAnalyzer();
+
+        var analysis = await analyzer.AnalyzeAsync(new MemoryStream(pdfBytes), CancellationToken.None);
+
+        analysis.PageCount.Should().BeGreaterThan(1);
+        analysis.TotalExtractableCharacters.Should().BeGreaterThan(0);
     }
 
     private static byte[] MinimalPdfWithText(string text)

@@ -37,22 +37,24 @@ static byte[] BuildPdf(string[] pageContents)
     }
 
     var kids = new List<int>();
-    var nextId = 3;
     var pageCount = Math.Max(1, pageContents.Length);
+    var firstContentId = 3;
+    var fontId = firstContentId + pageCount * 2;
+
     for (var i = 0; i < pageCount; i++)
     {
-        var contentId = nextId++;
-        var pageId = nextId++;
+        var contentId = firstContentId + i * 2;
+        var pageId = contentId + 1;
         kids.Add(pageId);
         var content = pageContents.Length > i ? pageContents[i] : string.Empty;
         WriteObject(contentId, $"<< /Length {content.Length} >>\nstream\n{content}\nendstream");
         WriteObject(pageId,
-            $"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents {contentId} 0 R /Resources << /Font << /F1 5 0 R >> >> >>");
+            $"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents {contentId} 0 R /Resources << /Font << /F1 {fontId} 0 R >> >> >>");
     }
 
     WriteObject(1, "<< /Type /Catalog /Pages 2 0 R >>");
     WriteObject(2, $"<< /Type /Pages /Kids [{string.Join(" ", kids.Select(k => $"{k} 0 R"))}] /Count {kids.Count} >>");
-    WriteObject(5, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+    WriteObject(fontId, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
 
     var xrefPos = ms.Position;
     writer.WriteLine("xref");

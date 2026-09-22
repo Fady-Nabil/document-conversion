@@ -9,24 +9,36 @@ internal sealed class OpenXmlDocumentConverter : IDocumentConverter
 {
     public Task<DocumentModel> ConvertPdfToDocumentModelAsync(Stream pdfStream, CancellationToken cancellationToken = default)
     {
-        using var document = PdfDocumentOpener.Open(pdfStream);
-        var pages = new List<PageModel>();
-
-        foreach (var page in document.GetPages())
+        try
         {
-            var text = page.Text ?? string.Empty;
-            var images = ExtractImages(page);
-            var pageDocx = DocxBuilder.CreateFromContent(text, images);
-            pages.Add(new PageModel
-            {
-                PageIndex = page.Number,
-                Text = text,
-                Images = images,
-                SerializedDocx = pageDocx
-            });
-        }
+            using var document = PdfDocumentOpener.Open(pdfStream);
+            var pages = new List<PageModel>();
 
-        return Task.FromResult(new DocumentModel { Pages = pages });
+            foreach (var page in document.GetPages())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var text = page.Text ?? string.Empty;
+                var images = ExtractImages(page);
+                var pageDocx = DocxBuilder.CreateFromContent(text, images);
+                pages.Add(new PageModel
+                {
+                    PageIndex = page.Number,
+                    Text = text,
+                    Images = images,
+                    SerializedDocx = pageDocx
+                });
+            }
+
+            return Task.FromResult(new DocumentModel { Pages = pages });
+        }
+        catch (DomainException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOrCorruptedInputException("Unable to convert PDF input.", ex);
+        }
     }
 
     public byte[] BuildPartDocx(DocumentModel document, IReadOnlyList<int> pageIndices)

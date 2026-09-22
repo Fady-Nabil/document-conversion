@@ -54,15 +54,14 @@ public sealed class ProcessConversionJobCommandHandler : IRequestHandler<Process
         await using var pdfStream = await _fileStorage.OpenReadAsync(job.SourceRelativePath, cancellationToken);
         using var memoryCopy = new MemoryStream();
         await pdfStream.CopyToAsync(memoryCopy, cancellationToken);
-        memoryCopy.Position = 0;
+        var pdfBytes = memoryCopy.ToArray();
 
-        var analysis = await _pdfAnalyzer.AnalyzeAsync(memoryCopy, cancellationToken);
-        memoryCopy.Position = 0;
+        var analysis = await _pdfAnalyzer.AnalyzeAsync(new MemoryStream(pdfBytes), cancellationToken);
 
         if (analysis.TotalExtractableCharacters == 0)
             throw new ScannedDocumentNotSupportedException("Document has no extractable text (scanned/image-only PDF).");
 
-        var document = await _documentConverter.ConvertPdfToDocumentModelAsync(memoryCopy, cancellationToken);
+        var document = await _documentConverter.ConvertPdfToDocumentModelAsync(new MemoryStream(pdfBytes), cancellationToken);
         if (document.IsEmpty)
             throw new EmptyDocumentException("Converted document is empty.");
 
