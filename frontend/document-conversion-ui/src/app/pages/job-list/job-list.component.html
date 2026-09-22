@@ -1,0 +1,69 @@
+<section class="history">
+  <div class="history-head">
+    <div>
+      <p class="page-kicker">Archive</p>
+      <h1 class="page-title">Job history</h1>
+      <p class="page-lead">Every conversion, split, and validation result stays here for the demo walkthrough.</p>
+    </div>
+    <div class="history-actions">
+      <a routerLink="/" class="btn btn-primary">New conversion</a>
+      <button type="button" class="btn btn-ghost" (click)="load()" [disabled]="loading || refreshing">
+        @if (refreshing) {
+          <span class="spinner" aria-hidden="true"></span>
+        }
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  @if (error) {
+    <div class="alert alert-error" role="alert">{{ error }}</div>
+  }
+
+  <div class="card history-card">
+    @if (loading) {
+      <div class="skel-list">
+        @for (row of [1, 2, 3, 4]; track row) {
+          <div class="skel-row">
+            <div class="skeleton skel-title"></div>
+            <div class="skeleton skel-meta"></div>
+          </div>
+        }
+      </div>
+    } @else if (!jobs.length) {
+      <div class="empty-state">
+        <p class="page-kicker">Nothing yet</p>
+        <h3>No conversions in this archive</h3>
+        <p>Submit a PDF to see status, parts, and the audit timeline.</p>
+        <p><a routerLink="/" class="btn btn-primary">Convert a PDF</a></p>
+      </div>
+    } @else {
+      <div class="job-table" role="table">
+        <div class="job-head" role="row">
+          <span>File</span>
+          <span>Created</span>
+          <span>Status</span>
+          <span></span>
+        </div>
+        @for (job of jobs; track job.id) {
+          <a class="job-row" role="row" [routerLink]="['/jobs', job.id]">
+            <strong>{{ job.sourceFileName }}</strong>
+            <span class="mono">{{ job.createdAt | date: 'MMM d, HH:mm' }}</span>
+            <app-status-badge [status]="job.status" />
+            <span class="chevron" aria-hidden="true">→</span>
+          </a>
+        }
+      </div>
+      @if (totalCount > pageSize) {
+        <div class="pager">
+          <span>{{ totalCount }} jobs</span>
+          <div>
+            <button type="button" class="btn btn-ghost" (click)="prev()" [disabled]="page === 1">Previous</button>
+            <span class="mono">{{ page }} / {{ totalPages }}</span>
+            <button type="button" class="btn btn-ghost" (click)="next()" [disabled]="page >= totalPages">Next</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>

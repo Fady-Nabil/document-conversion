@@ -1,0 +1,17 @@
+@DocumentConversion.Api_HostAddress = http://localhost:5104
+@jobId = 00000000-0000-0000-0000-000000000000
+
+### Health
+GET {{DocumentConversion.Api_HostAddress}}/health
+
+### List jobs
+GET {{DocumentConversion.Api_HostAddress}}/api/jobs?page=1&pageSize=20
+Accept: application/json
+
+### Job detail (replace @jobId after submit)
+GET {{DocumentConversion.Api_HostAddress}}/api/jobs/{{jobId}}
+Accept: application/json
+
+###
+# Multipart POST is easiest via Swagger (/swagger) or README curl:
+# curl.exe -X POST "http://localhost:5104/api/jobs" -F "file=@samples/text-based.pdf" -F "outputFormat=Docx"

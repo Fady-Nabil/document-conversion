@@ -1,0 +1,107 @@
+<section class="detail">
+  <p class="back"><a routerLink="/jobs">← Back to history</a></p>
+
+  @if (notFound) {
+    <div class="card empty-state">
+      <p class="page-kicker">Missing</p>
+      <h1 class="page-title">Job not found</h1>
+      <p class="page-lead">That conversion is not in the archive. It may have been removed, or the link is incomplete.</p>
+      <p><a routerLink="/jobs" class="btn btn-primary">Open history</a></p>
+    </div>
+  } @else if (loadError && !job) {
+    <div class="alert alert-error" role="alert">{{ loadError }}</div>
+  } @else if (!job) {
+    <div class="card loading-card">
+      <div class="skeleton skel-hero"></div>
+      <div class="skeleton skel-line"></div>
+      <div class="skeleton skel-line short"></div>
+    </div>
+  } @else {
+    <header class="detail-head">
+      <div>
+        <p class="page-kicker">Conversion</p>
+        <h1 class="page-title">{{ job.sourceFileName }}</h1>
+        <p class="job-id mono">Job {{ shortJobId(job.id) }} · {{ job.outputFormat }}</p>
+      </div>
+      <app-status-badge [status]="job.status" />
+    </header>
+
+    @if (isLive) {
+      <div class="card pipeline">
+        <div class="pipeline-head">
+          <strong>Live pipeline</strong>
+          <span class="live-dot">Updating</span>
+        </div>
+        <ol>
+          @for (step of pipeline; track step; let i = $index) {
+            <li [class.is-done]="i < pipelineIndex" [class.is-current]="i === pipelineIndex">
+              <span class="dot"></span>
+              {{ step }}
+            </li>
+          }
+        </ol>
+      </div>
+    }
+
+    @if (job.status === 'Completed') {
+      <div class="alert alert-ok">Conversion finished. Download the DOCX part{{ job.artifacts.length === 1 ? '' : 's' }} below.</div>
+    }
+    @if (job.status === 'Failed') {
+      <div class="alert alert-error">
+        <div>
+          <strong>{{ job.errorCode || 'Failed' }}</strong>
+          <p>{{ job.errorMessage || 'The conversion could not be completed.' }}</p>
+        </div>
+      </div>
+    }
+    @if (job.status === 'NeedsReview') {
+      <div class="alert alert-warn">
+        <div>
+          <strong>Needs review — output integrity check failed</strong>
+          <p>{{ job.errorMessage || 'Parts were produced, but validation did not pass. This is not a hard processing failure.' }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="detail-grid">
+      <section class="card panel">
+        <h2>Artifacts</h2>
+        @if (!job.artifacts.length) {
+          <p class="muted">{{ isLive ? 'Parts will appear here when conversion finishes.' : 'No downloadable parts for this job.' }}</p>
+        } @else {
+          <ul class="artifacts">
+            @for (a of job.artifacts; track a.fileName) {
+              <li>
+                <div>
+                  <strong>{{ a.displayLabel }}</strong>
+                  <span class="mono">{{ formatBytes(a.sizeBytes) }} · {{ a.fileName }}</span>
+                </div>
+                <a class="btn btn-primary" [href]="artifactUrl(a.partNumber)" target="_blank" rel="noopener">Download</a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="card panel">
+        <h2>Audit timeline</h2>
+        @if (!job.events.length) {
+          <p class="muted">Waiting for the first event…</p>
+        } @else {
+          <ol class="timeline">
+            @for (e of job.events; track e.occurredAt + e.message) {
+              <li>
+                <span class="dot"></span>
+                <div>
+                  <strong>{{ e.eventType }}</strong>
+                  <p>{{ e.message }}</p>
+                  <time class="mono">{{ e.occurredAt | date: 'medium' }}</time>
+                </div>
+              </li>
+            }
+          </ol>
+        }
+      </section>
+    </div>
+  }
+</section>

@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/Shared/">
+    <Project Path="src/Shared/Shared.csproj" />
+  </Folder>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Application/BuildingBlocks.Application.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Api/BuildingBlocks.Api.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Domain/BuildingBlocks.Domain.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Infrastructure/BuildingBlocks.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/DocumentConversion.Api/DocumentConversion.Api.csproj" />
+    <Project Path="src/DocumentConversion.Application/DocumentConversion.Application.csproj" />
+    <Project Path="src/DocumentConversion.Domain/DocumentConversion.Domain.csproj" />
+    <Project Path="src/DocumentConversion.Infrastructure/DocumentConversion.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DocumentConversion.Api.Tests/DocumentConversion.Api.Tests.csproj" />
+    <Project Path="tests/DocumentConversion.Application.Tests/DocumentConversion.Application.Tests.csproj" />
+    <Project Path="tests/DocumentConversion.Domain.Tests/DocumentConversion.Domain.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/SamplePdfGenerator/SamplePdfGenerator.csproj" />
+  </Folder>
+</Solution>

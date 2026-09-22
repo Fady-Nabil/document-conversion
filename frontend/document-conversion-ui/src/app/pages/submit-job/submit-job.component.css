@@ -1,0 +1,123 @@
+.convert {
+  max-width: 720px;
+}
+
+.convert-card {
+  margin-top: 1.75rem;
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.dropzone {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  padding: 1.5rem;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 16px;
+  background: var(--paper);
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.drop-copy {
+  display: grid;
+  place-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.dropzone strong,
+.drop-copy strong {
+  color: var(--ink);
+  font-size: 1.08rem;
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropzone.is-over {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.dropzone.has-file {
+  min-height: 0;
+  padding: 0;
+  border-style: solid;
+  background: transparent;
+}
+
+.drop-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--paper-elevated);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  margin-bottom: 0.4rem;
+}
+
+.file-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  background: var(--paper-elevated);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.file-card div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.file-card span {
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+}
+
+.convert-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.meta-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.format-chip {
+  display: inline-flex;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  background: var(--paper-sunken);
+  border: 1px solid var(--line);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .file-card,
+  .convert-meta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
